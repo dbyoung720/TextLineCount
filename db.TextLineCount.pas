@@ -9,14 +9,14 @@ unit db.TextLineCount;
 {
   Test£º
   30M  TEXT FILE:
-  GetTextLines01  828125   987
-  GetTextLines02  828092   484
-  GetTextLines03  828125    96
+  GetTextLineCount_SL  828125   987ms
+  GetTextLineCount_TF  828092   484ms
+  GetTextLineCount_FS  828125    96ms
 
   600M TEXT FILE:
-  GetTextLines01  < NOT SUPPORT >
-  GetTextLines02  14177571   8758
-  GetTextLines03  14181548   1659
+  GetTextLineCount_SL  < NOT SUPPORT >
+  GetTextLineCount_TF  14177571   8758ms
+  GetTextLineCount_FS  14181548   1659ms
 }
 
 interface
