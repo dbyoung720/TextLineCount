@@ -31,7 +31,7 @@ var
 begin
   with TStopwatch.StartNew do
   begin
-    intCount     := GetTextLineCount_FS('F:\Github\SFFS2\bin\Win32\F_Files.dat');
+    intCount     := GetTextLineCount_FS('F:\test\text\test.txt');
     btn1.Caption := Format('用时：%d 毫秒，总行数：%d', [ElapsedMilliseconds, intCount]);
   end;
 end;

@@ -23,7 +23,7 @@ interface
 
 function GetTextLineCount_SL(const strFileName: string): UInt64;
 function GetTextLineCount_TF(const strFileName: string): UInt64;
-function GetTextLineCount_FS(const strFileName: string): UInt64;
+function GetTextLineCount_FS(const strFileName: string; const bLinux: Boolean = False): UInt64;
 
 implementation
 
@@ -61,7 +61,11 @@ begin
   CloseFile(F);
 end;
 
-function GetTextLineCount_FS(const strFileName: string): UInt64;
+{
+  linux  下，只用 #10 作为换行符；
+  Windows下，#13#10、#13、#10，都可作为换行符
+}
+function GetTextLineCount_FS(const strFileName: string; const bLinux: Boolean = False): UInt64;
 var
   FS      : TFileStream;
   I, Count: Integer;
@@ -74,21 +78,40 @@ begin
   FS       := TFileStream.Create(strFileName, fmOpenRead);
   try
     Count := FS.Size;
-    while FS.Position < Count do
+    if bLinux then
     begin
-      FS.Read(Buffer[0], c_intLength);
-      startPos := startPos + c_intLength;
-      if startPos > Count then
-        partXPos := startPos - Count;
-
-      for I := 0 to c_intLength - 1 - partXPos do
+      while FS.Position < Count do
       begin
-        if (Buffer[I] = #13) and (Buffer[I + 1] = #10) then
-          Inc(Result)
-        else if (Buffer[I] = #13) and (Buffer[I + 1] <> #10) then
-          Inc(Result)
-        else if (Buffer[I] <> #13) and (Buffer[I + 1] = #10) then
-          Inc(Result);
+        FS.Read(Buffer[0], c_intLength);
+        startPos := startPos + c_intLength;
+        if startPos > Count then
+          partXPos := startPos - Count;
+
+        for I := 0 to c_intLength - 1 - partXPos do
+        begin
+          if (Buffer[I] = #10) then
+            Inc(Result);
+        end;
+      end;
+    end
+    else
+    begin
+      while FS.Position < Count do
+      begin
+        FS.Read(Buffer[0], c_intLength);
+        startPos := startPos + c_intLength;
+        if startPos > Count then
+          partXPos := startPos - Count;
+
+        for I := 0 to c_intLength - 1 - partXPos do
+        begin
+          if (Buffer[I] = #13) and (Buffer[I + 1] = #10) then
+            Inc(Result)
+          else if (Buffer[I] = #13) and (Buffer[I + 1] <> #10) then
+            Inc(Result)
+          else if (Buffer[I] <> #13) and (Buffer[I + 1] = #10) then
+            Inc(Result);
+        end;
       end;
     end;
   finally
