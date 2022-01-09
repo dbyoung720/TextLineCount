@@ -1,4 +1,4 @@
-unit db.TextLineCount;
+unit db.tlc;
 {
   Func: 统计文本文件行数
   Name: dbyoung@sina.com
@@ -61,50 +61,56 @@ begin
   CloseFile(F);
 end;
 
-function GetTextLineCount_FS_Linuxx(var FS : TFileStream; const Count:Integer): UInt64; inline;
+function GetTextLineCount_FS_Linuxx(var FS: TFileStream; const Count: Integer): UInt64; inline;
 var
   I       : Integer;
   startPos: Integer;
   partXPos: Integer;
 begin
-	while FS.Position < Count do
-	begin
-		FS.Read(Buffer[0], c_intLength);
-		startPos := startPos + c_intLength;
-		if startPos > Count then
-			partXPos := startPos - Count;
+  Result   := 0;
+  startPos := 0;
+  partXPos := 0;
+  while FS.Position < Count do
+  begin
+    FS.Read(Buffer[0], c_intLength);
+    startPos := startPos + c_intLength;
+    if startPos > Count then
+      partXPos := startPos - Count;
 
-		for I := 0 to c_intLength - 1 - partXPos do
-		begin
-			if (Buffer[I] = #10) then
-				Inc(Result);
-		end;
-	end;
+    for I := 0 to c_intLength - 1 - partXPos do
+    begin
+      if (Buffer[I] = #10) then
+        Inc(Result);
+    end;
+  end;
 end;
 
-function GetTextLineCount_FS_Window(var FS : TFileStream; const Count:Integer): UInt64; inline;
+function GetTextLineCount_FS_Window(var FS: TFileStream; const Count: Integer): UInt64; inline;
 var
   I       : Integer;
   startPos: Integer;
   partXPos: Integer;
 begin
-	while FS.Position < Count do
-	begin
-		FS.Read(Buffer[0], c_intLength);
-		startPos := startPos + c_intLength;
-		if startPos > Count then
-			partXPos := startPos - Count;
+  Result   := 0;
+  startPos := 0;
+  partXPos := 0;
+  while FS.Position < Count do
+  begin
+    FS.Read(Buffer[0], c_intLength);
+    startPos := startPos + c_intLength;
+    if startPos > Count then
+      partXPos := startPos - Count;
 
-		for I := 0 to c_intLength - 1 - partXPos do
-		begin
-			if (Buffer[I] = #13) and (Buffer[I + 1] = #10) then
-				Inc(Result)
-			else if (Buffer[I] = #13) and (Buffer[I + 1] <> #10) then
-				Inc(Result)
-			else if (Buffer[I] <> #13) and (Buffer[I + 1] = #10) then
-				Inc(Result);
-		end;
-	end;
+    for I := 0 to c_intLength - 1 - partXPos do
+    begin
+      if (Buffer[I] = #13) and (Buffer[I + 1] = #10) then
+        Inc(Result)
+      else if (Buffer[I] = #13) and (Buffer[I + 1] <> #10) then
+        Inc(Result)
+      else if (Buffer[I] <> #13) and (Buffer[I + 1] = #10) then
+        Inc(Result);
+    end;
+  end;
 end;
 
 {
@@ -113,18 +119,14 @@ end;
 }
 function GetTextLineCount_FS(const strFileName: string; const bLinux: Boolean = False): UInt64;
 var
-  FS      : TFileStream;
-  I, Count: Integer;
-  startPos: Integer;
-  partXPos: Integer;
+  FS   : TFileStream;
+  Count: Integer;
 begin
-  startPos := 0;
-  partXPos := 0;
-  FS       := TFileStream.Create(strFileName, fmOpenRead);
+  FS := TFileStream.Create(strFileName, fmOpenRead);
   try
     Count := FS.Size;
     if bLinux then
-			Result := GetTextLineCount_FS_Linuxx(FS, Count)
+      Result := GetTextLineCount_FS_Linuxx(FS, Count)
     else
       Result := GetTextLineCount_FS_Window(FS, Count);
   finally

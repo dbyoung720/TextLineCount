@@ -3,7 +3,7 @@ program Project1;
 uses
   Vcl.Forms,
   Unit1 in 'Unit1.pas' {Form1},
-  db.TextLineCount in 'db.TextLineCount.pas';
+  db.tlc in 'db.tlc.pas';
 
 {$R *.res}
 

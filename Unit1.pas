@@ -23,7 +23,7 @@ implementation
 
 {$R *.dfm}
 
-uses db.TextLineCount;
+uses db.tlc;
 
 procedure TForm1.btn1Click(Sender: TObject);
 var
