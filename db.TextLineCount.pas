@@ -61,6 +61,52 @@ begin
   CloseFile(F);
 end;
 
+function GetTextLineCount_FS_Linux(var FS : TFileStream; const Count:Integer): UInt64; inline;
+var
+  I       : Integer;
+  startPos: Integer;
+  partXPos: Integer;
+begin
+	while FS.Position < Count do
+	begin
+		FS.Read(Buffer[0], c_intLength);
+		startPos := startPos + c_intLength;
+		if startPos > Count then
+			partXPos := startPos - Count;
+
+		for I := 0 to c_intLength - 1 - partXPos do
+		begin
+			if (Buffer[I] = #10) then
+				Inc(Result);
+		end;
+	end;
+end;
+
+function GetTextLineCount_FS_Window(var FS : TFileStream; const Count:Integer): UInt64; inline;
+var
+  I       : Integer;
+  startPos: Integer;
+  partXPos: Integer;
+begin
+	while FS.Position < Count do
+	begin
+		FS.Read(Buffer[0], c_intLength);
+		startPos := startPos + c_intLength;
+		if startPos > Count then
+			partXPos := startPos - Count;
+
+		for I := 0 to c_intLength - 1 - partXPos do
+		begin
+			if (Buffer[I] = #13) and (Buffer[I + 1] = #10) then
+				Inc(Result)
+			else if (Buffer[I] = #13) and (Buffer[I + 1] <> #10) then
+				Inc(Result)
+			else if (Buffer[I] <> #13) and (Buffer[I + 1] = #10) then
+				Inc(Result);
+		end;
+	end;
+end;
+
 {
   linux  下，只用 #10 作为换行符；
   Windows下，#13#10、#13、#10，都可作为换行符
@@ -79,41 +125,9 @@ begin
   try
     Count := FS.Size;
     if bLinux then
-    begin
-      while FS.Position < Count do
-      begin
-        FS.Read(Buffer[0], c_intLength);
-        startPos := startPos + c_intLength;
-        if startPos > Count then
-          partXPos := startPos - Count;
-
-        for I := 0 to c_intLength - 1 - partXPos do
-        begin
-          if (Buffer[I] = #10) then
-            Inc(Result);
-        end;
-      end;
-    end
+			Result := GetTextLineCount_FS_Linux(FS, Count)
     else
-    begin
-      while FS.Position < Count do
-      begin
-        FS.Read(Buffer[0], c_intLength);
-        startPos := startPos + c_intLength;
-        if startPos > Count then
-          partXPos := startPos - Count;
-
-        for I := 0 to c_intLength - 1 - partXPos do
-        begin
-          if (Buffer[I] = #13) and (Buffer[I + 1] = #10) then
-            Inc(Result)
-          else if (Buffer[I] = #13) and (Buffer[I + 1] <> #10) then
-            Inc(Result)
-          else if (Buffer[I] <> #13) and (Buffer[I + 1] = #10) then
-            Inc(Result);
-        end;
-      end;
-    end;
+      Result := GetTextLineCount_FS_Window(FS, Count);
   finally
     FS.Free;
   end;
