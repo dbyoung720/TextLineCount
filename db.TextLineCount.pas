@@ -16,7 +16,7 @@ unit db.TextLineCount;
   600M TEXT FILE:
   GetTextLineCount_SL  < NOT SUPPORT >
   GetTextLineCount_TF  14177571   8758ms
-  GetTextLineCount_FS  14181548   1659ms
+  GetTextLineCount_FS  14181548   1659ms (linux 868ms)
 }
 
 interface
