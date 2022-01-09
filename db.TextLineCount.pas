@@ -61,7 +61,7 @@ begin
   CloseFile(F);
 end;
 
-function GetTextLineCount_FS_Linux(var FS : TFileStream; const Count:Integer): UInt64; inline;
+function GetTextLineCount_FS_Linuxx(var FS : TFileStream; const Count:Integer): UInt64; inline;
 var
   I       : Integer;
   startPos: Integer;
@@ -125,7 +125,7 @@ begin
   try
     Count := FS.Size;
     if bLinux then
-			Result := GetTextLineCount_FS_Linux(FS, Count)
+			Result := GetTextLineCount_FS_Linuxx(FS, Count)
     else
       Result := GetTextLineCount_FS_Window(FS, Count);
   finally
