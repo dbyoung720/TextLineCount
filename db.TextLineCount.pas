@@ -118,7 +118,6 @@ var
   startPos: Integer;
   partXPos: Integer;
 begin
-  Result   := 0;
   startPos := 0;
   partXPos := 0;
   FS       := TFileStream.Create(strFileName, fmOpenRead);
